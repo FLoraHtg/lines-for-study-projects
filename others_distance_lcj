@@ -1,0 +1,46 @@
+# Project: LCJ Distance Paper
+
+# Method: binomial logistic regression
+# H0 for model1: distance does not influence the participation rate
+# H0 for model2: distance and floor do not influence the participation rate
+
+# variables:
+# metre: distance to the wet waste station
+# n.hh: total households in each building
+# hh: number of household participating
+# floor: floor level
+
+# import data
+d <- read.csv("E:\\Dropbox\\5- PROJECT WX\\201807 LCJ_Dispaper\\180709dataori.csv")
+head(d)
+
+# model 1
+# model 1: binominal logit model "metre"~ pr
+m1 <- glm(formula = cbind(hh, n.hh-hh) ~ metre, data = d, family = binomial(logit))
+summary(m1)
+
+# model2: binominal logit model "metre" + "floor" ~ pr
+m2 <- glm(formula = cbind(hh, n.hh - hh) ~ metre + factor(floor), data = d, family = binomial(logit))
+summary(m2)
+
+
+# Floor is not related with recycling behaviour in the m2. 
+# We test whether m1 is better than m2.
+
+anova(m1, m2, test = "Chisq")
+
+# Adding floor in the model does not improve the model fit.
+
+# Check the best fitting model
+# pseudo R2 (McFadden, D. 1979)
+
+PseudoR2(m1)[1]
+
+# Check the odd ratio
+# mean odd ration
+exp(coef(m1))[2] # exponentiated coefficients
+
+# 95% CI for odd ratio
+exp(confint(m1))[2,] #95% CI for exponentiated coefficients
+
+# fin
