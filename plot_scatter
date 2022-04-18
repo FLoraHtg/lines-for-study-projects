@@ -1,30 +1,56 @@
-# import data
-dat116 <- read.csv("Directory/2.3 Data Analysis/Study2.3 dat116 3rd day/data116.csv", header = T)
-head(dat116)
-
-datplot <- read.csv("Directory/2.3 Data Analysis/Study2.3 dat116 3rd day/splot.csv", header = T)
+#import data
+dat122 <- read.csv("Directory/2.3 Data Analysis/Study2.3 dat116 3day/data122.csv", header = T)
+plot116 <- read.csv("Directory/2.3 Data Analysis/Study2.3 dat116 3day/plot116.csv", header = T)
+datplot <- read.csv("Directory2.3 Data Analysis/Study2.3 dat116 3day/plot116.csv", header = T)
 head(datplot)
 
-# import packages
-library(ggplot2)
+#import library
 library(dplyr)
-library(psych)
+library(ggplot2)
+library(psy)
 
+# choose control group and 2 experiment groups
+dat116 <- filter(dat122, group != 3)
+
+# extract scales: 
+# community belongingness,
+# environmental self-identity, 
+# environmental group identity
+scale_com <- dat116[,9:11]
+scale_esid <- dat116[,12:14]
+scale_egid <- dat116[,15:17]
+
+cronbach(scale_com)
+cronbach(scale_esid)
+cronbach(scale_egid)
+
+# descriptive, frequencies of nominal and ordinal variables
 
 # select group data
 g0 <- filter(datplot, group != 0)
 e1 <- filter(datplot, group != 1)
 e2 <- filter(datplot, group != 2)
 
-# scatter plot
-p_all <- ggplot(datplot, aes(x = time1, y = recycling_freq, col = factor(ds))) +
+# scatter plot, according to weeks
+p_all_1 <- ggplot(datplot, aes(x = time1, y = recycling_freq, col = factor(time1))) +
   geom_jitter(aes(alpha = 0.01))+
   facet_grid(~group, scales = "free_x", space = "free_y") +
-    theme(plot.title = element_text(size=30, face="bold", vjust=2)) +
-    xlab("weeks before and after door-stepping") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-    ylab("residents' recycling behaviour")
-p_all
+  theme(plot.title = element_text(size=30, face="bold", vjust=2)) +
+  xlab("weeks before and after door-stepping") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("residents' recycling behaviour")
+p_all_1
+
+
+# scatterplot, dividing by before and after visit
+p_all_2 <- ggplot(datplot, aes(x = time1, y = recycling_freq, col = factor(ds))) +
+  geom_jitter(aes(alpha = 0.01))+
+  facet_grid(~group, scales = "free_x", space = "free_y") +
+  theme(plot.title = element_text(size=30, face="bold", vjust=2)) +
+  xlab("weeks before and after door-stepping") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("residents' recycling behaviour")
+p_all_2
 
 # boxplot
 p_all_bp<- ggplot(datplot, aes(x = ds, y = recycling_freq, fill = factor(ds))) +
@@ -35,17 +61,3 @@ p_all_bp<- ggplot(datplot, aes(x = ds, y = recycling_freq, fill = factor(ds))) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("residents' recycling behaviour")
 p_all_bp
-
-
-# draw plot separately
-p0 <- ggplot(g0, aes(x= time1, y = recycling_freq)) +
-  geom_jitter(aes(alpha = 0.01))
-p1 <- ggplot(e1, aes(x= time1, y = recycling_freq)) +
-  geom_jitter(aes(alpha = 0.01, col="red"))
-p2 <- ggplot(e2, aes(x= time1, y = recycling_freq)) +
-  geom_jitter(aes(alpha = 0.01, col = "blue"))
-
-# draw plot
-p_all
-p1
-p2
