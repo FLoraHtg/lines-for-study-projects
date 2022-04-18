@@ -1,0 +1,51 @@
+# import data
+dat116 <- read.csv("Directory/2.3 Data Analysis/Study2.3 dat116 3rd day/data116.csv", header = T)
+head(dat116)
+
+datplot <- read.csv("Directory/2.3 Data Analysis/Study2.3 dat116 3rd day/splot.csv", header = T)
+head(datplot)
+
+# import packages
+library(ggplot2)
+library(dplyr)
+library(psych)
+
+
+# select group data
+g0 <- filter(datplot, group != 0)
+e1 <- filter(datplot, group != 1)
+e2 <- filter(datplot, group != 2)
+
+# scatter plot
+p_all <- ggplot(datplot, aes(x = time1, y = recycling_freq, col = factor(ds))) +
+  geom_jitter(aes(alpha = 0.01))+
+  facet_grid(~group, scales = "free_x", space = "free_y") +
+    theme(plot.title = element_text(size=30, face="bold", vjust=2)) +
+    xlab("weeks before and after door-stepping") +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    ylab("residents' recycling behaviour")
+p_all
+
+# boxplot
+p_all_bp<- ggplot(datplot, aes(x = ds, y = recycling_freq, fill = factor(ds))) +
+  geom_boxplot() +
+  facet_grid(~group, scales = "free_x", space = "free_y") +
+  theme(plot.title = element_text(size=30, face="bold", vjust=2)) +
+  xlab("weeks before and after door-stepping") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("residents' recycling behaviour")
+p_all_bp
+
+
+# draw plot separately
+p0 <- ggplot(g0, aes(x= time1, y = recycling_freq)) +
+  geom_jitter(aes(alpha = 0.01))
+p1 <- ggplot(e1, aes(x= time1, y = recycling_freq)) +
+  geom_jitter(aes(alpha = 0.01, col="red"))
+p2 <- ggplot(e2, aes(x= time1, y = recycling_freq)) +
+  geom_jitter(aes(alpha = 0.01, col = "blue"))
+
+# draw plot
+p_all
+p1
+p2
