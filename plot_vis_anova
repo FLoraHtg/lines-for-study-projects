@@ -1,0 +1,105 @@
+library(ggplot2)
+library(dplyr)
+library(ggpubr)
+
+# having an individual obs data set
+stu  <- select(stu243, "group","gender", "age", 
+                     "esid", "egid", "envi_rmb", "peb")
+
+# add new variable in data set
+stu <- stu %>% mutate (group = factor(stu$group,
+                  levels=c(0, 1, 2, 3), 
+                  labels=c("Control", "ESID", "EGID", "EIDs")))
+
+# create a group means data set
+# result mean variables in both data sets
+gm <- stu %>%
+  group_by(group) %>%
+  summarise(
+    envi_rmb = mean(envi_rmb),
+    peb = mean(peb)
+  )
+
+# plot both date set, respectively
+ggplot(stu, aes(x = group, y = envi_rmb)) +
+  geom_point()
+
+ggplot(gm, aes(x  = group, y = envi_rmb)) +
+  geom_bar(stat = "identity")
+
+# combine these plots
+# individual point first, then load group data set for bar
+p1 <- ggplot(stu, aes(x  = group, y = envi_rmb, col = group, fill = group)) +
+  geom_point(alpha = 0.3) +
+  geom_bar(data = gm, stat = "identity", alpha = .3) +
+  guides(color = "none", fill = "none") +
+  theme_bw() +# no grey backgroud
+  labs(
+    title = "Intention on Environmental Project Donation",
+    x = "condition",
+    y = "Willingness to Donate to Environmental Project (CNY)"
+  ) +
+  theme(axis.line = element_line(size = 1, colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()) +
+  geom_signif(comparisons = list(c("Control", "ESID"),
+                                 c("Control","EGID" ),
+                                 c("Control","EIDs")),
+              map_signif_level=FALSE,
+              y_position=c(120, 150, 180)) # tip_length = c(0.2, 0.05, 0.2, 0.05, 0.1, 0.05) vertical line length
+  
+
+  
+p1
+
+
+p2 <- ggplot(stu, aes(x  = group, y = peb, col = group, fill = group)) +
+  geom_point() +
+  geom_bar(data = gm, stat = "identity", alpha = .3) +
+  guides(color = "none", fill = "none") +
+  theme_bw() +# no grey backgroud
+  labs(
+    title = "Intention on Pro-envrionmental Behaviour",
+    x = "condition",
+    y = "willingness to behave"
+  ) + 
+  theme(axis.line = element_line(size = 1, colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()) +
+  geom_signif(comparisons = list(c("EGID", "Control"),
+                                 c("EGID","EIDs" ),
+                                 c("EGID","ESID")),
+              map_signif_level=FALSE,
+              y_position=c(6, 6.75, 7.5))
+
+ggarrange(p1, p2, nrow = 2, ncol = 1, common.legend = TRUE, legend="top")
+
+
+
+# no colour
+p3 <- ggplot(stu, aes(x  = group, y = envi_rmb)) +
+  geom_boxplot()+
+  #geom_point(alpha = 0.3) +
+  # geom_bar(data = gm, stat = "identity", alpha = .3) +
+  guides(color = "none", fill = "none") +
+  theme_bw() +# no grey backgroud
+  labs(
+    title = "Intention on Environmental Project Donation",
+    x = "condition",
+    y = "Willingness to Donate to Environmental Project (CNY)"
+  ) +
+  theme(axis.line = element_line(size = 1, colour = "black"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank()) +
+  geom_signif(comparisons = list(c("Control", "ESID"),
+                                 c("Control","EGID" ),
+                                 c("Control","EIDs")),
+              map_signif_level=FALSE,
+              y_position=c(120, 150, 180)) # tip_length = c(0.2, 0.05, 0.2, 0.05, 0.1, 0.05) vertical line length
+p3
